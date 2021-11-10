@@ -1,7 +1,7 @@
 import AbstractService from "./AbstractService";
 import Axios from 'axios';
 
-const API = Axios.create({ baseURL: 'http://localhost:4000/users' });
+const API = Axios.create({ baseURL: 'https://jfps-21-10-1999.herokuapp.com/users' });
 
 API.interceptors.request.use((req) => {
     if (localStorage.getItem('profile')) {
