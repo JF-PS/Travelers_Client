@@ -33,7 +33,7 @@ const Map = () => {
 
         window.addEventListener("keydown", listener);
 
-        socketRef.current = io.connect("http://localhost:4000", {
+        socketRef.current = io.connect("https://jfps-21-10-1999.herokuapp.com", {
             withCredentials: false,
             extraHeaders: {
             origins: "allowedOrigins"
