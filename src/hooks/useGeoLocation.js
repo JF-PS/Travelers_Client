@@ -1,31 +1,11 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 // import { useState, useEffect } from "react";
 
 const useGeoLocation = () => {
-    const [location, setLocation] = useState({
+    const [currentLocation, setLocation] = useState({
         loaded: false,
         coordinates: { lat: 0, lng: 0 },
     });
-
-    const onSuccess = (location) => {
-        setLocation({
-            loaded: true,
-            coordinates: {
-                lat: location.coords.latitude,
-                lng: location.coords.longitude,
-            },
-        });
-    };
-
-    const onError = (error) => {
-        setLocation({
-            loaded: true,
-            error: {
-                code: error.code,
-                message: error.message,
-            },
-        });
-    };
 
     // useEffect(() => {
     //     if (!("geolocation" in navigator)) {
@@ -38,11 +18,33 @@ const useGeoLocation = () => {
     //     navigator.geolocation.getCurrentPosition(onSuccess, onError);
     // }, []);
 
-    const callGeoLocation = async () => {
-        navigator.geolocation.getCurrentPosition(onSuccess, onError);
-    }
+    const callLocation = useCallback(()=> {
+        const onLocationSuccess = (location) => {
+            setLocation({
+                loaded: true,
+                coordinates: {
+                    lat: location.coords.latitude,
+                    lng: location.coords.longitude,
+                },
+            });
+        };  
+    
+        const onLocationError = (error) => {
+            setLocation({
+                loaded: true,
+                error: {
+                    code: error.code,
+                    message: error.message,
+                },
+            });
+        };
+        navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError);
+    }, [])
 
-    return { location, callGeoLocation };
+    return { 
+        location: currentLocation, 
+        callLocation
+    };
 };
 
 export default useGeoLocation;
