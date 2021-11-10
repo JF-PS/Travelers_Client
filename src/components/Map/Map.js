@@ -2,12 +2,17 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import useGeoLocation from "../../hooks/useGeoLocation";
 import userService from "../../services/UserServices";
 import ReactMapGL, { Marker, Popup, FlyToInterpolator } from "react-map-gl";
+// import mapboxgl from "mapbox-gl";
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
+import MapboxWorker from 'mapbox-gl/dist/mapbox-gl-csp-worker';
+
 import 'mapbox-gl/dist/mapbox-gl.css'
 import io from "socket.io-client"
 import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
 import { isEmpty } from 'lodash'
 
 const Map = () => {
+    mapboxgl.workerClass = MapboxWorker;
 
     const user = useMemo(() => JSON.parse(localStorage.getItem('profile')), []);
     const [travelersData, setTravelersData] = useState([]);
@@ -33,7 +38,7 @@ const Map = () => {
 
         window.addEventListener("keydown", listener);
 
-        socketRef.current = io.connect("https://jfps-21-10-1999.herokuapp.com", {
+        socketRef.current = io.connect("http://localhost:4000", {
             withCredentials: false,
             extraHeaders: {
             origins: "allowedOrigins"
