@@ -59,14 +59,13 @@ const Map = () => {
 
         return () => {
             setInterval(() => { callLocation()}, 15000);
-            socketRef.current.disconnect();
+            // socketRef.current.disconnect();
             window.removeEventListener("keydown", listener);
         }
 
     }, []);
 
     useEffect(() => {
-        console.log("test");
         callLocation();
     }, [callLocation]);
 
@@ -104,7 +103,7 @@ const Map = () => {
                 transitionEasing: t => t * (2 - t)
             }));
 
-            return () => socketRef.current.disconnect()
+            // return () => socketRef.current.disconnect()
         }
     }, [location, loaded]);
 
