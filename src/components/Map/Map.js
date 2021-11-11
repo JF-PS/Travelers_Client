@@ -20,7 +20,7 @@ const Map = () => {
     const [viewport, setViewport] = useState({
         width: "100vw",
         height: "100vh",
-        zoom: 10
+        zoom: 12
     });
     const {location, callLocation} = useGeoLocation();
     var socketRef = useRef();
@@ -38,13 +38,14 @@ const Map = () => {
 
         window.addEventListener("keydown", listener);
 
-        socketRef.current = io.connect("https://jfps-21-10-1999.herokuapp.com:4000", {
+        socketRef.current = io.connect("https://jfps-21-10-1999.herokuapp.com:8000", {
+            path: '/socket.io-client',
             withCredentials: false,
             extraHeaders: {
             origins: "allowedOrigins"
             },
-            enabledTransports: ['ws', 'wss'],
-            transports : ['websocket']
+            enabledTransports: ['websocket', 'ws', 'wss'],
+            transports: ['websocket', 'ws', 'wss']
         });
 
         socketRef.current.on("travelersNewLocation", ({ id, lat, lng }) => {
