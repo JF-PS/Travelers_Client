@@ -42,10 +42,10 @@ const Map = () => {
             path: '/socket.io-client',
             withCredentials: false,
             extraHeaders: {
-            origins: "allowedOrigins"
+                origins: "allowedOrigins"
             },
-            enabledTransports: ['websocket', 'ws', 'wss'],
-            transports: ['websocket', 'ws', 'wss']
+            // enabledTransports: ['websocket', 'ws', 'wss'],
+            transports: ['wss']
         });
 
         socketRef.current.on("travelersNewLocation", ({ id, lat, lng }) => {
