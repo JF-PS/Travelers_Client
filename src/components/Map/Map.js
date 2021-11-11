@@ -44,8 +44,8 @@ const Map = () => {
             extraHeaders: {
                 origins: "allowedOrigins"
             },
-            // enabledTransports: ['websocket', 'ws', 'wss'],
-            transports: ['wss']
+            enabledTransports: ['websocket', 'ws', 'wss'],
+            transports: ['websocket', 'ws', 'wss']
         });
 
         socketRef.current.on("travelersNewLocation", ({ id, lat, lng }) => {
