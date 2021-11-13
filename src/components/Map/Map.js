@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+// import React, { useEffect, useRef, useState, useMemo } from 'react';
 import useGeoLocation from "../../hooks/useGeoLocation";
 import userService from "../../services/UserServices";
 import ReactMapGL, { Marker, Popup, FlyToInterpolator } from "react-map-gl";
@@ -10,6 +11,11 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import io from "socket.io-client"
 import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
 import { isEmpty } from 'lodash'
+
+const ENDPOINT = 'https://jfps-21-10-1999.herokuapp.com/'
+// const ENDPOINT = 'http://localhost:8000'
+
+let socket;
 
 const Map = () => {
     mapboxgl.workerClass = MapboxWorker;
@@ -23,7 +29,7 @@ const Map = () => {
         zoom: 12
     });
     const {location, callLocation} = useGeoLocation();
-    var socketRef = useRef();
+    // var socketRef = useRef();
     const [change, setChange] = useState({});
     const [loaded, setLoaded] = useState(false);
 
@@ -38,30 +44,45 @@ const Map = () => {
 
         window.addEventListener("keydown", listener);
 
-        socketRef.current = io.connect("https://jfps-21-10-1999.herokuapp.com:8000", {
-            path: '/socket.io-client',
+        // socketRef.current = io.connect("https://jfps-21-10-1999.herokuapp.com/", {
+        //     path: '/socket.io-client',
+        //     withCredentials: false,
+        //     extraHeaders: {
+        //         origins: "allowedOrigins"
+        //     },
+        //     "force new connection": true,
+        //     reconnectionAttempts: "Infinity",
+        //     timeout: 10000,
+        //     enabledTransports: ['websocket', 'ws', 'wss'],
+        //     transports: ['websocket', 'ws', 'wss']
+        // });
+
+        socket = io(ENDPOINT, {
             withCredentials: false,
             extraHeaders: {
                 origins: "allowedOrigins"
             },
+            "force new connection": true,
+            reconnectionAttempts: "Infinity",
+            timeout: 10000,
             enabledTransports: ['websocket', 'ws', 'wss'],
             transports: ['websocket', 'ws', 'wss']
         });
 
-        socketRef.current.on("travelersNewLocation", ({ id, lat, lng }) => {
+        socket.on("travelersNewLocation", ({ id, lat, lng }) => {
             console.log("*******************************************************************");
             console.log("Sockette activé : Détection de nouvelle position");
             setChange({ id, lat, lng });
             console.log("*******************************************************************");
         });
 
-        socketRef.current.on("connect_error", (err) => {
+        socket.on("connect_error", (err) => {
             console.log(`connect_error due to ${err.message}`);
         });
 
         return () => {
             setInterval(() => { callLocation()}, 15000);
-            socketRef.current.disconnect();
+            socket.disconnect();
             window.removeEventListener("keydown", listener);
         }
 
@@ -76,7 +97,7 @@ const Map = () => {
             // update info in the server
             if(user && user.message !== "Something went wrong") {
                 console.log(user);
-                socketRef.current.emit("userLocation", { id: user.result.id, lat: location.coordinates.lat, lng: location.coordinates.lng });
+                socket.emit("userLocation", { id: user.result.id, lat: location.coordinates.lat, lng: location.coordinates.lng });
                 userService.findTravelersAround(location.coordinates).then((travelers) => {
                     var travelersArround = travelers.data.map(x => x);
                     travelersArround.forEach((trav) => {
@@ -105,7 +126,7 @@ const Map = () => {
                 transitionEasing: t => t * (2 - t)
             }));
 
-            return () => socketRef.current.disconnect()
+            return () => socket.disconnect()
         }
     }, [location, loaded]);
 
