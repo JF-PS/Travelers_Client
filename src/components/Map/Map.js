@@ -12,7 +12,7 @@ import io from "socket.io-client"
 import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
 import { isEmpty } from 'lodash'
 
-const ENDPOINT = 'https://jfps-21-10-1999.herokuapp.com/'
+const ENDPOINT = 'https://jfps-21-10-1999.herokuapp.com:8000/'
 // const ENDPOINT = 'http://localhost:8000'
 
 let socket;
