@@ -141,7 +141,6 @@ const Map = () => {
 
     return (
         <>
-                <div>{JSON.stringify(travelersData)}</div>
                 <ReactMapGL
                    {...viewport}
                    mapboxApiAccessToken="pk.eyJ1IjoiamYtcHMiLCJhIjoiY2t2aHZ6a202MmdlbDMxcGd1czlsZGd6aSJ9.2WKXsUcIweQ1TTha53hBhg"
