@@ -142,7 +142,12 @@ const Map = () => {
 
     return (
         <>
-                <ReactMapGL
+                <div>
+                    {JSON.stringify(travelersData)}
+                    {JSON.stringify(viewport)}
+                    {JSON.stringify(selectedTraveler)}
+                </div>
+                {/* <ReactMapGL
                    {...viewport}
                    mapboxApiAccessToken="pk.eyJ1IjoiamYtcHMiLCJhIjoiY2t2aHZ6a202MmdlbDMxcGd1czlsZGd6aSJ9.2WKXsUcIweQ1TTha53hBhg"
                    mapStyle="mapbox://styles/jf-ps/ckvdw1n4g25s915tfl6if73sd?optimize=true"
@@ -177,7 +182,7 @@ const Map = () => {
                             </div>
                         </Popup>
                    )}
-               </ReactMapGL>
+               </ReactMapGL> */}
         </>
     );
 };

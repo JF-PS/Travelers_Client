@@ -22,7 +22,7 @@ const useGeoLocation = () => {
         console.log("updateLocation");
         
         const onLocationSuccess = (location) => {
-            alert(`[lat : ${location.coords.latitude} | lng : ${location.coords.longitude}]`)
+            // alert(`[lat : ${location.coords.latitude} | lng : ${location.coords.longitude}]`)
             setLocation({
                 loaded: true,
                 coordinates: {
