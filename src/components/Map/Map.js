@@ -10,7 +10,8 @@ import io from "socket.io-client"
 import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
 import { isEmpty } from 'lodash'
 
-const ENDPOINT = 'https://poc-socket.herokuapp.com/';
+// const ENDPOINT = 'https://api-voyageur.herokuapp.com/';
+const ENDPOINT = 'https://jfps-21-10-1999.herokuapp.com/';
 
 let socket;
 
@@ -129,10 +130,8 @@ const Map = () => {
                 if(traveler.id === change.id && (traveler.lat !== change.lat || traveler.lng !== change.lng)) {
                     // traveler.lat = change.lat;
                     // traveler.lng = change.lng;
-
                     travelersArround[travelersArround.indexOf(traveler)].lat = change.lat;
                     travelersArround[travelersArround.indexOf(traveler)].lng = change.lng;
-                    alert(travelersArround[travelersArround.indexOf(traveler)].first_name)
                 }
             });
             setTravelersData(travelersArround);
