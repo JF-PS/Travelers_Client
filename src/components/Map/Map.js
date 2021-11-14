@@ -86,7 +86,7 @@ const Map = () => {
                     lat: location.coordinates.lat, 
                     lng: location.coordinates.lng
                 }
-
+                console.log("Emit =====>")
                 socket.emit('sendLocation', sendLocation);
 
                 userService.findTravelersAround(location.coordinates).then((travelers) => {
@@ -132,6 +132,7 @@ const Map = () => {
 
                     travelersArround[travelersArround.indexOf(traveler)].lat = change.lat;
                     travelersArround[travelersArround.indexOf(traveler)].lng = change.lng;
+                    alert(travelersArround[travelersArround.indexOf(traveler)].first_name)
                 }
             });
             setTravelersData(travelersArround);
