@@ -1,6 +1,6 @@
 import TextField from "@material-ui/core/TextField"
 import React, { useEffect, useRef, useState } from "react"
-import io from "socket.io-client"
+import io from "socket.io-client";
 import "./style.css"
 
 const Chat = () => {

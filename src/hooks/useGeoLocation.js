@@ -19,6 +19,7 @@ const useGeoLocation = () => {
     // }, []);
 
     const callLocation = useCallback(()=> {
+        console.log("updateLocation");
         const onLocationSuccess = (location) => {
             setLocation({
                 loaded: true,

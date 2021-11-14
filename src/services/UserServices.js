@@ -4,9 +4,11 @@ import Axios from 'axios';
 const API = Axios.create({ 
     baseURL: 'https://jfps-21-10-1999.herokuapp.com/users',
     withCredentials: false,
-    extraHeaders: {
-        origins: "allowedOrigins"
-    }
+    proxy: "https://jfps-21-10-1999.herokuapp.com",
+    headers: { 
+        'Access-Control-Allow-Origin' : '*',
+        'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+    },
  });
 
 API.interceptors.request.use((req) => {
