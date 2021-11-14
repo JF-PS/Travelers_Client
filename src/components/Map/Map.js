@@ -23,7 +23,7 @@ const Map = () => {
     const [viewport, setViewport] = useState({
         width: "100vw",
         height: "100vh",
-        zoom: 12
+        zoom: 18
     });
     const {location, callLocation} = useGeoLocation();
     const [change, setChange] = useState({});
@@ -142,15 +142,15 @@ const Map = () => {
 
     return (
         <>
-                <div>
+                {/* <div>
                     {JSON.stringify(travelersData)}
                     {JSON.stringify(viewport)}
                     {JSON.stringify(selectedTraveler)}
-                </div>
-                {/* <ReactMapGL
+                </div> */}
+                <ReactMapGL
                    {...viewport}
                    mapboxApiAccessToken="pk.eyJ1IjoiamYtcHMiLCJhIjoiY2t2aHZ6a202MmdlbDMxcGd1czlsZGd6aSJ9.2WKXsUcIweQ1TTha53hBhg"
-                   mapStyle="mapbox://styles/jf-ps/ckvdw1n4g25s915tfl6if73sd?optimize=true"
+                //    mapStyle="mapbox://styles/jf-ps/ckvdw1n4g25s915tfl6if73sd?optimize=true"
                    onViewportChange={viewport => { setViewport(viewport); }}
                    onLoad={() => setLoaded(true)}
                >
@@ -182,7 +182,7 @@ const Map = () => {
                             </div>
                         </Popup>
                    )}
-               </ReactMapGL> */}
+               </ReactMapGL>
         </>
     );
 };
