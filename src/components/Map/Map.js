@@ -4,28 +4,34 @@ import userService from "../../services/UserServices";
 import ReactMapGL, { Marker, Popup, FlyToInterpolator } from "react-map-gl";
 import 'mapbox-gl/dist/mapbox-gl.css'
 import io from "socket.io-client"
-import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
+import LocationOnSharpIcon from '@mui/icons-material/LocationOnSharp';
 import { isEmpty } from 'lodash'
+import { useHistory } from 'react-router-dom';
+import BeigeRoundedBtn from "../Buttons/BeigeRoundedBtn";
+import "./style.css"
 
-// const ENDPOINT = 'https://api-voyageur.herokuapp.com/';
 const ENDPOINT = 'https://jfps-21-10-1999.herokuapp.com/';
-
-// http://localhost:4000
+// const ENDPOINT = 'http://localhost:4000/';
 
 let socket;
 
-const Map = () => {
+const Map = (props) => {
     const user = useMemo(() => JSON.parse(localStorage.getItem('profile')), []);
     const [travelersData, setTravelersData] = useState([]);
     const [selectedTraveler, setSelectedTraveler] = useState(null);
     const [viewport, setViewport] = useState({
         width: "100vw",
-        height: "100vh",
-        zoom: 18
+        height:"calc(100vh - 56px)",
+        zoom: 10
     });
     const {location, callLocation} = useGeoLocation();
     const [change, setChange] = useState({});
     const [loaded, setLoaded] = useState(false);
+    const history = useHistory();
+    const chat = (idUser2) => {
+        history.push(`/chat/${idUser2}`);
+    };
+
 
     useEffect(() => {
 
@@ -136,6 +142,8 @@ const Map = () => {
         
     }, [change]);
 
+    const { children } = props;
+
     return (
         <>
                 {/* <div>
@@ -145,8 +153,11 @@ const Map = () => {
                 </div> */}
                 <ReactMapGL
                    {...viewport}
-                   mapboxApiAccessToken="pk.eyJ1IjoiamYtcHMiLCJhIjoiY2t2aHZ6a202MmdlbDMxcGd1czlsZGd6aSJ9.2WKXsUcIweQ1TTha53hBhg"
-                   mapStyle="mapbox://styles/jf-ps/ckvdw1n4g25s915tfl6if73sd?optimize=true"
+                   mapboxApiAccessToken="pk.eyJ1IjoibW9yZ2FuZWR1bHVjIiwiYSI6ImNrdnc1MGRyejA3NDcyb3A0ZDBvZnJoOHIifQ.oKbJN0xnJQvYgfOfcSZzyw"
+                   mapStyle="mapbox://styles/morganeduluc/ckw559ao4894l14pa9xtjwyj2"
+                //    mapStyle="mapbox://styles/morganeduluc/ckvuuvnfd3czk14o2ud5bv6w6?optimize=true"
+                // hfdjn
+
                    onViewportChange={viewport => { setViewport(viewport); }}
                    onLoad={() => setLoaded(true)}
                >
@@ -155,10 +166,10 @@ const Map = () => {
                 && (travelersData.map(traveler => (
                     <Marker key={traveler.id} latitude={traveler.lat} longitude={traveler.lng}>
                         <span onClick={e => { e.preventDefault(); setSelectedTraveler(traveler); }} >
-                            {((user) && (user.message !== "Something went wrong") && (traveler.id === user.result.id)) ? (
-                                <PersonPinCircleOutlinedIcon style={{ fontSize: 40, color: '#1E90FF' }} />
+                        {((user) && (user.message !== "Something went wrong") && (traveler.id === user.result.id)) ? (                                                      
+                                <LocationOnSharpIcon style={{ fontSize: 40, color: '#3F3979', backgroundColor: 'rgba(235, 167, 1, 0.7)', borderRadius: 50 }} />
                             ) : (
-                                <PersonPinCircleOutlinedIcon style={{ fontSize: 40, color: '#724b15' }} />
+                                <LocationOnSharpIcon style={{ fontSize: 40, color: '#FFFFFF', backgroundColor: 'rgba(235, 167, 1, 0.7)', borderRadius: 50 }} />
                             ) }
                         </span>
                     </Marker>
@@ -173,11 +184,31 @@ const Map = () => {
                             }}
                         >
                             <div>
+                            <h1>{selectedTraveler.id}</h1>
                                 <h2>{`${selectedTraveler.first_name} ${selectedTraveler.last_name}`}</h2>
                                 <p>{`lat : ${selectedTraveler.lat} lng : ${selectedTraveler.lng}`}</p>
+
+                                {(user) && (
+                                    <>
+                                        <div onClick={() => chat(selectedTraveler.id)}>
+                                            <BeigeRoundedBtn
+                                                name={"Contacter"}
+                                                backgroundColor={"#FAF3F0"}
+                                                color={"#EABF9F"}
+                                                variant={"contained"}
+                                                borderRadius={"50px"}
+                                                borderColor={"#EABF9F"}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+
                             </div>
                         </Popup>
                    )}
+
+                {children}
+
                </ReactMapGL>
         </>
     );

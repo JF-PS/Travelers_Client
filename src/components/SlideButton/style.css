@@ -1,0 +1,19 @@
+.css-17ndd9v-MuiButtonBase-root-MuiToggleButton-root.Mui-selected:hover {
+    background-color: #A480A6 !important;
+    color: white !important;
+}
+
+.css-17ndd9v-MuiButtonBase-root-MuiToggleButton-root.Mui-selected {
+    background-color: #A480A6 !important;
+    color: white !important;
+}
+
+.css-17ndd9v-MuiButtonBase-root-MuiToggleButton-root {
+  border-radius: 8px !important;
+}
+
+.css-mgs850-MuiToggleButtonGroup-root {
+  width: fill !important;
+  margin-left: 25px !important;
+  margin-right: 25px !important;
+}

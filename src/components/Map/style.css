@@ -1,0 +1,17 @@
+.mapboxgl-canvas {
+  border-radius: 0 0 50px 50px !important
+}
+
+/* .mapboxgl-ctrl-attrib-button {
+  background-color: none !important;
+  background-image: none !important
+} */
+
+.mapboxgl-ctrl-attrib.mapboxgl-compact{
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+.mapboxgl-ctrl-logo{
+  background-image: none !important;
+}

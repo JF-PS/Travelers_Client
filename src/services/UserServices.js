@@ -1,15 +1,7 @@
 import AbstractService from "./AbstractService";
 import Axios from 'axios';
 
-const API = Axios.create({ 
-    baseURL: 'https://jfps-21-10-1999.herokuapp.com/users',
-    withCredentials: false,
-    proxy: "https://jfps-21-10-1999.herokuapp.com",
-    headers: { 
-        'Access-Control-Allow-Origin' : '*',
-        'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-    },
- });
+const API = Axios.create({ baseURL: 'https://jfps-21-10-1999.herokuapp.com/users' });
 
 API.interceptors.request.use((req) => {
     if (localStorage.getItem('profile')) {
@@ -23,7 +15,7 @@ API.interceptors.request.use((req) => {
 class UserService extends AbstractService {
 
     async signIn(formData) {
-
+        console.log(formData);
         let promise;
 
         await API.post("/signin", formData).then(
@@ -48,7 +40,20 @@ class UserService extends AbstractService {
         return promise;
     }
 
-    
+    async updateUserProfil(formData, id) {
+
+        let promise;
+
+        await API.post(`/updateuser/${id}`, formData).then(
+            (response) => {
+                promise = this.getRequest(response, true);
+            }
+        );
+
+        return promise;
+    }
+
+
     async findTravelersAround(location) {
         let promise;
 
