@@ -10,12 +10,16 @@ import { useHistory } from 'react-router-dom';
 import BeigeRoundedBtn from "../Buttons/BeigeRoundedBtn";
 import "./style.css"
 
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
+import MapboxWorker from 'mapbox-gl/dist/mapbox-gl-csp-worker';
+
 const ENDPOINT = 'https://jfps-21-10-1999.herokuapp.com/';
 // const ENDPOINT = 'http://localhost:4000/';
 
 let socket;
 
 const Map = (props) => {
+    mapboxgl.workerClass = MapboxWorker;
     const user = useMemo(() => JSON.parse(localStorage.getItem('profile')), []);
     const [travelersData, setTravelersData] = useState([]);
     const [selectedTraveler, setSelectedTraveler] = useState(null);
