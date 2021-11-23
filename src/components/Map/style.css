@@ -1,0 +1,42 @@
+#mapId {
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+.mapboxgl-canvas {
+  border-radius: 0 0 50px 50px !important;
+}
+
+.mapboxgl-ctrl-attrib.mapboxgl-compact {
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+.mapboxgl-ctrl-logo {
+  background-image: none !important;
+}
+
+.mapboxgl-popup-content {
+  height: 65px;
+  width: 150px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mapboxgl-popup-close-button {
+  margin: 0;
+  padding: 12px;
+  font-size: 16px;
+  color: #3F3979;
+}
+
+.mapboxgl-ctrl-attrib-button {
+    background-image: none !important;
+    height: 0 !important;
+}
+
+.mapboxgl-ctrl-bottom-right{
+  display: none;
+}

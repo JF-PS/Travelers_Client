@@ -11,6 +11,7 @@ import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 import LanguageIcon from '@mui/icons-material/Language';
 import SelectCountry from '../Inputs/SelectCountry'
 import PublicIcon from '@mui/icons-material/Public';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 const Setting = () => {
     const label = { inputProps: { 'aria-label': 'Switch demo' } };
@@ -58,6 +59,16 @@ const Setting = () => {
                     </ListItemAvatar> 
                     <ListItemText primary="Language" secondary="Choose your language." />
                     <SelectCountry />
+                </ListItem>
+                <Divider variant="inset" component="li" />
+                <ListItem>
+                    <ListItemAvatar>
+                        <Avatar>H</Avatar>
+                    </ListItemAvatar> 
+                    <ListItemText primary="Mon Compte" secondary="Mettre à jours les informations" />
+                    <a href="edit-profil">
+                        <ManageAccountsIcon />
+                    </a>
                 </ListItem>
             </List>
         </>

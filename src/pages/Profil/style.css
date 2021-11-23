@@ -1,0 +1,16 @@
+#mapId {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url("../../images/backgroundMobile.jpg") !important;
+}
+
+.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-mhc70k-MuiGrid-root {
+  height: fit-content;
+}
+
+.css-1e6y48t-MuiButtonBase-root-MuiButton-root {
+  margin-bottom: 10px !important;
+}
+
+/* TODO: retirer l'espace  */
+/* .css-11lq3yg-MuiGrid-root {
+  display: block;
+} */

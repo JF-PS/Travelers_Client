@@ -1,64 +1,71 @@
-import AbstractService from "./AbstractService";
 import Axios from 'axios';
 
-const API = Axios.create({ 
-    baseURL: 'https://jfps-21-10-1999.herokuapp.com/users',
-    withCredentials: false,
-    proxy: "https://jfps-21-10-1999.herokuapp.com",
-    headers: { 
-        'Access-Control-Allow-Origin' : '*',
-        'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-    },
- });
+const API = Axios.create({ baseURL: `${process.env.REACT_APP_URL_API_VOYAGEUR}/users` });
 
 API.interceptors.request.use((req) => {
     if (localStorage.getItem('profile')) {
       req.headers.Authorization = `Bearer ${JSON.parse(localStorage.getItem('profile')).token}`;
     }
-  
+
     return req;
 });
-  
 
-class UserService extends AbstractService {
+class UserService {
 
-    async signIn(formData) {
-
-        let promise;
-
-        await API.post("/signin", formData).then(
-            (response) => {
-                promise = this.getRequest(response, true);
-            }
-        );
-
-        return promise;
+    signIn(formData) {
+        return new Promise((resolve, reject) => {
+            API.post("/signin", formData).then((response) => {
+              resolve(response);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
     }
 
-    async signUp(formData) {
-
-        let promise;
-
-        await API.post("/signup", formData).then(
-            (response) => {
-                promise = this.getRequest(response, true);
-            }
-        );
-
-        return promise;
+    signUp(formData) {
+        return new Promise((resolve, reject) => {
+            API.post("/signup", formData).then((response) => {
+              resolve(response);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
     }
 
-    
-    async findTravelersAround(location) {
-        let promise;
+    updateUserProfil(formData, id) {
+        return new Promise((resolve, reject) => {
+            API.put(`/updateuser/${id}`, formData).then((response) => {
+              resolve(response);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+    }
 
-        await API.get(`/travelersArround/${location.lat}/${location.lng}`).then(
-            (response) => {
-                promise = this.getRequest(response, true);
-            }
-        );
 
-        return promise;
+    findTravelersAround(location) {
+        return new Promise((resolve, reject) => {
+            API.get(`/travelersArround/${location.lat}/${location.lng}`).then((response) => {
+              resolve(response);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+    }
+
+    async deleteUser(id) {
+        return new Promise((resolve, reject) => {
+            API.delete(`/deleteuser/${id}`).then((response) => {
+              resolve(response);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
     }
 }
 

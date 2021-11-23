@@ -1,186 +1,152 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import useGeoLocation from "../../hooks/useGeoLocation";
-import userService from "../../services/UserServices";
-import ReactMapGL, { Marker, Popup, FlyToInterpolator } from "react-map-gl";
-import 'mapbox-gl/dist/mapbox-gl.css'
-import io from "socket.io-client"
-import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
-import { isEmpty } from 'lodash'
+import useLocationSocket from "../../hooks/useLocationSocket";
+import useUsersStore from "../../hooks/useUsersStore";
+import useMapboxGeocoding from "../../hooks/useMapboxGeocoding";
+import useViewportMap from "../../hooks/useViewportMap";
+import ReactMapGL from "react-map-gl";
+import MarkersMap from "./MarkersMap";
+import BubbleMap from "./BubbleMap";
+import SearchBar from "../SearchBar/SearchBar";
+import { isEmpty } from "lodash";
 
-// const ENDPOINT = 'https://api-voyageur.herokuapp.com/';
-const ENDPOINT = 'https://jfps-21-10-1999.herokuapp.com/';
+import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "./style.css";
 
-// http://localhost:4000
+const Map = (props) => {
+  const [loaded, setLoaded] = useState(false);
+  const [selectedTraveler, setSelectedTraveler] = useState(null);
+  const { viewport, setViewport, handleViewportChange } = useViewportMap();
+  const { location, callLocation } = useGeoLocation();
+  const { callMaboxGeocoding, localePlace, setLocalePlace } =
+    useMapboxGeocoding();
+  const { change, EmitUserLocation, userBlocksGeo } = useLocationSocket();
+  const {
+    travelersData,
+    searchTravelersAround,
+    updateUserLocation,
+    removeUserNotAuthorize,
+  } = useUsersStore();
+  const user = useMemo(() => JSON.parse(localStorage.getItem("profile")), []);
+  const mapRef = useRef();
 
-let socket;
+  useEffect(() => {
+    const listener = (e) => {
+      if (e.key === "Escape") setSelectedTraveler(null);
+    };
+    window.addEventListener("keydown", listener);
+    return () => {
+      window.removeEventListener("keydown", listener);
+    };
+  }, [setSelectedTraveler]);
 
-const Map = () => {
-    const user = useMemo(() => JSON.parse(localStorage.getItem('profile')), []);
-    const [travelersData, setTravelersData] = useState([]);
-    const [selectedTraveler, setSelectedTraveler] = useState(null);
-    const [viewport, setViewport] = useState({
-        width: "100vw",
-        height: "100vh",
-        zoom: 18
-    });
-    const {location, callLocation} = useGeoLocation();
-    const [change, setChange] = useState({});
-    const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    callLocation();
+  }, [callLocation]);
 
-    useEffect(() => {
+  useEffect(() => {
+    console.log("WTF ?");
+    console.log(travelersData);
+  }, [travelersData]);
 
-        const listener = e => {
-            if (e.key === "Escape") {
-                setSelectedTraveler(null);
-            }
-        };
+  useEffect(() => {
+    if (location.loaded && loaded) {
+      EmitUserLocation({
+        id: user && user.result.id,
+        lat: location.coordinates.lat,
+        lng: location.coordinates.lng,
+      });
 
-        window.addEventListener("keydown", listener);
+      searchTravelersAround(location.coordinates, user && user.result.id);
 
-        socket = io(ENDPOINT, {
-            withCredentials: false,
-            extraHeaders: {
-                origins: "allowedOrigins"
-            },
-            enabledTransports: ['websocket', 'ws', 'wss'],
-            transports: ['websocket', 'ws', 'wss']
-        });
+      setViewport((vp) => ({
+        ...vp,
+        latitude: location.coordinates.lat,
+        longitude: location.coordinates.lng,
+        transitionDuration: 2000,
+      }));
+    }
+  }, [
+    location,
+    loaded,
+    user,
+    EmitUserLocation,
+    searchTravelersAround,
+    setViewport,
+  ]);
 
-        socket.on('location', ({ id, lat, lng }) => {
-            console.log("==========================================");
-            console.log("Coordonnées reçu : ");
-            console.log(id, lat, lng);
-            setChange({ id, lat, lng });
-        });
+  useEffect(() => {
+    updateUserLocation(change);
+  }, [change, updateUserLocation]);
 
-        socket.on("connect_error", (err) => {
-            console.log(`connect_error due to ${err.message}`);
-        });
+  useEffect(() => {
+    if (!isEmpty(localePlace)) {
+      searchTravelersAround(
+        {
+          lat: localePlace.coordinates[1],
+          lng: localePlace.coordinates[0],
+        },
+        null
+      );
+      setViewport((vp) => ({
+        ...vp,
+        latitude: localePlace.coordinates[1],
+        longitude: localePlace.coordinates[0],
+        transitionDuration: 1000,
+      }));
+    } else {
+      searchTravelersAround(location.coordinates, user && user.result.id);
+      setViewport((vp) => ({
+        ...vp,
+        latitude: location.coordinates.lat,
+        longitude: location.coordinates.lng,
+        transitionDuration: 1000,
+      }));
+    }
+  }, [localePlace, setViewport, location, searchTravelersAround, user]);
 
-        const interval = setInterval(() => {
-            callLocation();
-         }, 15000);
+  useEffect(() => {
+    if (!isEmpty(userBlocksGeo)) {
+      userBlocksGeo.forEach((userToBlock) => {
+        removeUserNotAuthorize(userToBlock);
+      });
+    }
+  }, [userBlocksGeo, removeUserNotAuthorize]);
 
-        return () => {
-            clearInterval(interval);
-            // setInterval(() => { callLocation() }, 5000);
-            // socketRef.current.disconnect();
-            window.removeEventListener("keydown", listener);
-        }
+  const { children } = props;
 
-    }, []);
+  return (
+    <>
+      <ReactMapGL
+        {...viewport}
+        ref={mapRef}
+        mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_API_KEY}
+        mapStyle={process.env.REACT_APP_MAPBOX_STYLE}
+        onViewportChange={handleViewportChange}
+        onLoad={() => setLoaded(true)}
+      >
+        <MarkersMap
+          travelersData={travelersData}
+          user={user}
+          setSelectedTraveler={setSelectedTraveler}
+        />
 
-    useEffect(() => {
-        callLocation();
-    }, [callLocation]);
+        <BubbleMap
+          selectedTraveler={selectedTraveler}
+          user={user}
+          setSelectedTraveler={setSelectedTraveler}
+        />
 
-    useEffect(() => {
-        if(location.loaded && loaded) {
+        <SearchBar
+          callMaboxGeocoding={callMaboxGeocoding}
+          setLocalePlace={setLocalePlace}
+        />
 
-            if(user && user.message !== "Something went wrong") {
-
-                const sendLocation = { 
-                    id: user.result.id, 
-                    lat: location.coordinates.lat, 
-                    lng: location.coordinates.lng
-                }
-                console.log("Emit =====>")
-                socket.emit('sendLocation', sendLocation);
-
-                userService.findTravelersAround(location.coordinates).then((travelers) => {
-                    var travelersArround = travelers.data.map(x => x);
-                    travelersArround.forEach((trav) => {
-                        if((trav.id === user.result.id) && (trav.lat !== location.coordinates.lat || trav.lng !== location.coordinates.lng)) {
-                            travelersArround[travelersArround.indexOf(trav)].lat = location.coordinates.lat;
-                            travelersArround[travelersArround.indexOf(trav)].lng = location.coordinates.lng;
-                        }
-                    })
-                    setTravelersData(travelersArround);
-                });
-            }
-            else{
-                userService.findTravelersAround(location.coordinates).then((travelers) => {
-                    console.log(travelers.data)
-                    setTravelersData(travelers.data);
-                });
-            }
-
-            // update info in the map
-            setViewport((vp) => ({ 
-                ...vp, latitude: 
-                location.coordinates.lat, 
-                longitude: location.coordinates.lng, 
-                transitionDuration: 500, 
-                transitionInterpolator: new FlyToInterpolator(), 
-                transitionEasing: t => t * (2 - t)
-            }));
-
-            // return () => socketRef.current.disconnect()
-        }
-    }, [location, loaded]);
-
-    useEffect(() => {
-        console.log(change);
-        if((!isEmpty(travelersData)) ) {
-            var travelersArround = travelersData.map(x => x);
-            travelersArround.forEach(traveler => {
-                if(traveler.id === change.id && (traveler.lat !== change.lat || traveler.lng !== change.lng)) {
-                    // traveler.lat = change.lat;
-                    // traveler.lng = change.lng;
-                    travelersArround[travelersArround.indexOf(traveler)].lat = change.lat;
-                    travelersArround[travelersArround.indexOf(traveler)].lng = change.lng;
-                }
-            });
-            setTravelersData(travelersArround);
-        }
-        
-    }, [change]);
-
-    return (
-        <>
-                {/* <div>
-                    {JSON.stringify(travelersData)}
-                    {JSON.stringify(viewport)}
-                    {JSON.stringify(selectedTraveler)}
-                </div> */}
-                <ReactMapGL
-                   {...viewport}
-                   mapboxApiAccessToken="pk.eyJ1IjoiamYtcHMiLCJhIjoiY2t2aHZ6a202MmdlbDMxcGd1czlsZGd6aSJ9.2WKXsUcIweQ1TTha53hBhg"
-                   mapStyle="mapbox://styles/jf-ps/ckvdw1n4g25s915tfl6if73sd?optimize=true"
-                   onViewportChange={viewport => { setViewport(viewport); }}
-                   onLoad={() => setLoaded(true)}
-               >
-                {
-                (!isEmpty(travelersData)) 
-                && (travelersData.map(traveler => (
-                    <Marker key={traveler.id} latitude={traveler.lat} longitude={traveler.lng}>
-                        <span onClick={e => { e.preventDefault(); setSelectedTraveler(traveler); }} >
-                            {((user) && (user.message !== "Something went wrong") && (traveler.id === user.result.id)) ? (
-                                <PersonPinCircleOutlinedIcon style={{ fontSize: 40, color: '#1E90FF' }} />
-                            ) : (
-                                <PersonPinCircleOutlinedIcon style={{ fontSize: 40, color: '#724b15' }} />
-                            ) }
-                        </span>
-                    </Marker>
-                )))}
-   
-                   {(selectedTraveler) && (
-                        <Popup
-                            latitude={selectedTraveler.lat}
-                            longitude={selectedTraveler.lng}
-                            onClose={() => {
-                                setSelectedTraveler(null);
-                            }}
-                        >
-                            <div>
-                                <h2>{`${selectedTraveler.first_name} ${selectedTraveler.last_name}`}</h2>
-                                <p>{`lat : ${selectedTraveler.lat} lng : ${selectedTraveler.lng}`}</p>
-                            </div>
-                        </Popup>
-                   )}
-               </ReactMapGL>
-        </>
-    );
+        {children}
+      </ReactMapGL>
+    </>
+  );
 };
 
 export default Map;
